@@ -19,9 +19,15 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
+    "migration:create": "npm run typeorm -- migration:create",
+    "migration:generate": "npm run typeorm -- migration:generate -d ./src/scripts/datasource.ts",
+    "migration:run": "ts-node src/scripts/run-migrations.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d ./src/scripts/datasource.ts"
   },
   "dependencies": {
+    "@nestjs/axios": "^4.0.0",
     "@nestjs/bull": "^10.0.1",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.0",
@@ -42,6 +48,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "crypto-js": "^4.1.1",
+    "dotenv": "^16.5.0",
     "ethers": "^5.8.0",
     "ioredis": "^5.3.2",
     "nestjs-pino": "^4.1.0",

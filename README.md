@@ -1,74 +1,92 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Wallet Radar Server
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Hệ thống theo dõi giao dịch blockchain và gửi thông báo khi phát hiện giao dịch mới từ một địa chỉ ví được chỉ định.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tính năng chính
 
-## Description
+- **Theo dõi ví blockchain**: Lắng nghe các giao dịch từ địa chỉ ví được chỉ định trên nhiều mạng blockchain.
+- **Lọc token**: Có thể theo dõi giao dịch của một token cụ thể hoặc tất cả các tokens.
+- **Thông báo đa kênh**: Gửi alert qua webhook, email, và có thể mở rộng thêm các kênh thông báo khác.
+- **Xử lý bất đồng bộ**: Sử dụng queue system để xử lý hiệu quả việc lắng nghe và thông báo.
+- **RESTful API**: Quản lý subscriptions thông qua API endpoints.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Kiến trúc hệ thống
 
-## Installation
+Hệ thống bao gồm các thành phần chính:
 
+1. **API Module**: Xử lý các yêu cầu HTTP để tạo/quản lý subscriptions
+2. **Worker Module**: Chạy cron job để kiểm tra giao dịch mới
+3. **Queue System**: Xử lý bất đồng bộ việc kiểm tra và thông báo giao dịch
+4. **Blockchain Service**: Tương tác với các mạng blockchain để lấy thông tin giao dịch
+5. **Notification Service**: Gửi thông báo qua các kênh khác nhau
+
+## Cài đặt và chạy
+
+### Yêu cầu
+
+- Node.js v16+
+- PostgreSQL
+- Redis
+
+### Cài đặt
+
+1. Clone repository:
 ```bash
-$ npm install
+git clone https://github.com/your-username/wallet-radar-server.git
+cd wallet-radar-server
 ```
 
-## Running the app
-
+2. Cài đặt dependencies:
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+pnpm install
 ```
 
-## Test
-
+3. Cấu hình môi trường:
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.sample .env
+# Cập nhật các thông tin trong file .env
 ```
 
-## Support
+4. Tạo database và chạy migrations:
+```bash
+createdb wallet_radar  # Hoặc tạo trong PostgreSQL UI
+pnpm migration:run
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Chạy ứng dụng
 
-## Stay in touch
+#### Development:
+```bash
+# Chạy API server
+IS_API=1 pnpm start:dev
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Chạy worker
+IS_WORKER=1 pnpm start:dev
 
-## License
+# Chạy cả API và worker
+IS_API=1 IS_WORKER=1 pnpm start:dev
+```
 
-Nest is [MIT licensed](LICENSE).
-# startkit-nest
+#### Production:
+```bash
+# Build ứng dụng
+pnpm build
+
+# Chạy server
+IS_API=1 IS_WORKER=1 NODE_ENV=production pnpm start:prod
+```
+
+## API Documentation
+
+Xem chi tiết API trong tài liệu Swagger tại: `http://localhost:3000/api`
+
+### Endpoints chính:
+
+- `POST /wallet-radar/subscribe` - Tạo subscription mới
+- `GET /wallet-radar/subscriptions` - Lấy danh sách subscriptions
+- `GET /wallet-radar/subscriptions/:id` - Lấy subscription theo ID
+- `DELETE /wallet-radar/subscriptions/:id` - Xóa subscription
+
+## Tài liệu chi tiết
+
+Xem thêm tài liệu chi tiết tại: [src/modules/business/wallet-radar/README.md](src/modules/business/wallet-radar/README.md)
