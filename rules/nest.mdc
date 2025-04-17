@@ -1,0 +1,28 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Quy tắc đặt tên Endpoint trong NestJS
+
+## Quy tắc chung
+- Tất cả các endpoint phải được đặt tên theo quy tắc kebab-case (a-b).
+- Tất cả các endpoint phải có tài liệu swagger 
+- Không được sử dụng camelCase (aB) hoặc các ký tự đặc biệt.
+- Không sử dụng các tiền tố HTTP verb như get, post, put, delete, update trong tên endpoint.
+
+
+## Ví dụ
+- Đúng: `user-profile`, `data`, `user-info`
+- Sai: `userProfile`, `getData`, `updateUserInfo`, `get-data`, `update-user-info`
+
+## Áp dụng
+- Áp dụng cho tất cả các controller trong dự án
+- Áp dụng cả cho path và param trong endpoint
+- Áp dụng cả với endpoint con và endpoint chính
+
+## Lý do
+- Dễ đọc, dễ hiểu
+- Khả năng tương thích tốt với các hệ thống khác
+- Chuẩn hóa API trong toàn bộ hệ thống
+- Tránh trùng lặp với HTTP method đã được chỉ định trong decorator (@Get, @Post, @Put, @Delete)

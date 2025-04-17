@@ -1,0 +1,48 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Rule Name: common.mdc
+Description: 
+# Quy tắc ngôn ngữ
+- Tất cả comment trong code phải dùng tiếng Anh
+- Mọi thông báo lỗi trong hệ thống phải sử dụng tiếng Anh
+- Dữ liệu trả về từ API/functions phải là tiếng Anh
+- Trao đổi với người dùng sử dụng tiếng Việt
+
+# Quy tắc logging
+- Mọi console phải có chú thích rõ ràng theo định dạng:
+  console.log(`[icon] [tên_class] [tên_function] [tên_biến]:`, biến);
+  
+- Icon gợi ý:
+  * 🔍 - Tìm kiếm/Truy vấn
+  * ⚠️ - Cảnh báo
+  * 🔴 - Lỗi
+  * ✅ - Thành công
+  * 🔄 - Đang xử lý
+
+# Quy tắc cấu trúc code
+- Mỗi chức năng phải được đóng gói thành function riêng biệt
+- Một function không được vượt quá 300 từ
+- Function phải có khả năng tái sử dụng cao
+- Mỗi function chỉ thực hiện một nhiệm vụ cụ thể
+- Đặt tên biến/hàm mô tả rõ chức năng
+- Tuân thủ nguyên tắc SOLID và DRY:
+  * SOLID:
+    - S (Single Responsibility): Mỗi class chỉ có một lý do để thay đổi
+    - O (Open/Closed): Mở rộng class mà không sửa đổi code hiện có
+    - L (Liskov Substitution): Class con có thể thay thế class cha
+    - I (Interface Segregation): Nhiều interface chuyên biệt tốt hơn một interface lớn
+    - D (Dependency Inversion): Phụ thuộc vào abstraction, không vào implementation
+  * DRY (Don't Repeat Yourself): Tránh lặp lại code, mỗi logic chỉ viết một lần
+
+# Quy tắc xử lý lỗi
+- Mọi hàm thao tác dữ liệu phải có try/catch
+- Ghi log đầy đủ thông tin lỗi
+- Trả về message lỗi rõ ràng, dễ hiểu cho người dùng
+
+# Quy tắc bảo mật
+- Không lưu credential trong code
+- Sử dụng biến môi trường cho thông tin nhạy cảm
+- Validate dữ liệu đầu vào

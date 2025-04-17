@@ -1,0 +1,73 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Kiểm tra việc triển khai Swagger
+
+## Danh sách Controller cần triển khai
+
+- [x] HealthController
+- [x] AuthController
+- [x] UserController
+- [ ] Các controller mới cần được thêm vào danh sách này
+
+## Kiểm tra từng Controller
+
+### HealthController
+- [x] Thêm decorator `@ApiTags`
+- [x] Thêm `@ApiOperation` cho mỗi endpoint
+- [x] Thêm `@ApiResponse` cho mỗi endpoint
+
+### AuthController
+- [x] Thêm decorator `@ApiTags` 
+- [x] Thêm `@ApiOperation` cho mỗi endpoint
+- [x] Thêm `@ApiResponse` cho mỗi endpoint
+- [x] Thêm `@ApiQuery` hoặc `@ApiParam` nếu cần
+- [x] Thêm `@ApiBearerAuth` cho các API yêu cầu xác thực
+
+### UserController
+- [x] Thêm decorator `@ApiTags`
+- [x] Thêm `@ApiOperation` cho mỗi endpoint
+- [x] Thêm `@ApiResponse` cho mỗi endpoint
+- [x] Thêm `@ApiBearerAuth` cho các API yêu cầu xác thực
+
+## Kiểm tra DTOs
+
+### Auth DTOs
+- [x] Mỗi thuộc tính có `@ApiProperty` với mô tả
+- [x] Thêm ví dụ cho mỗi thuộc tính
+- [x] Đảm bảo các validator có đầy đủ
+
+### User DTOs
+- [ ] Mỗi thuộc tính có `@ApiProperty` với mô tả
+- [ ] Thêm ví dụ cho mỗi thuộc tính
+- [ ] Đảm bảo các validator có đầy đủ
+
+## Kiểm tra Response DTOs
+
+- [x] Các response DTOs có đầy đủ decorator
+- [ ] Sử dụng `@ApiBaseResponse` nếu phù hợp
+- [ ] Đặt ví dụ phù hợp cho mỗi response
+
+## Kiểm tra Swagger UI
+
+- [ ] Kiểm tra UI tại `/docs` endpoint
+- [ ] Đảm bảo tất cả API đều hiển thị đúng
+- [ ] Đảm bảo mỗi API đều có thể thử nghiệm
+- [ ] Kiểm tra chức năng xác thực Bearer token
+
+## Một số lưu ý quan trọng
+
+1. Mọi API mới phải được thêm tài liệu Swagger đầy đủ
+2. Đảm bảo cung cấp ví dụ thực tế và hữu ích
+3. Swagger phải luôn đồng bộ với code thực tế
+4. Không đưa thông tin nhạy cảm vào ví dụ
+5. Các endpoint phải tuân thủ quy tắc đặt tên kebab-case
+
+## Hướng dẫn thử nghiệm
+
+1. Chạy server trong môi trường development
+2. Truy cập `/docs` để mở Swagger UI
+3. Thử nghiệm các API trong UI
+4. Đảm bảo các request mẫu hoạt động đúng 
