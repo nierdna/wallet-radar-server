@@ -33,5 +33,5 @@
       "ethers": ["./node_modules/ethers"]
     }
   },
-  "include": ["src", "scripts"]
+  "include": ["src"]
 }
