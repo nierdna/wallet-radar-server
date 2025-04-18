@@ -31,12 +31,19 @@ export class WalletRadarConsumer {
     const { subscription } = job.data;
 
     try {
+      // Kiểm tra thời gian tồn tại của subscription (tối đa 30 phút)
+      const createdAt = new Date(subscription.created_at);
+      const now = new Date();
+      const thirtyMinutesInMs = 30 * 60 * 1000;
+      const hasExpired =
+        now.getTime() - createdAt.getTime() > thirtyMinutesInMs;
+
       // Lấy transactions mới từ blockchain
       const newTransactions = await this.blockchainService.getNewTransactions(
         subscription.wallet_address,
         subscription.token_address,
         subscription.blockchain_network,
-        subscription.last_processed_block,
+        subscription.last_processed_block + 1,
       );
 
       this.logger.debug(
@@ -91,6 +98,13 @@ export class WalletRadarConsumer {
         await this.walletSubscriptionRepository.save(subscription);
         this.logger.debug(
           `Updated last processed block to ${latestBlock} for wallet ${subscription.wallet_address}`,
+        );
+      } else if (hasExpired && subscription.active) {
+        // Nếu subscription đã tồn tại hơn 30 phút và vẫn đang active nhưng không có tx nào
+        subscription.active = false;
+        await this.walletSubscriptionRepository.save(subscription);
+        this.logger.warn(
+          `Subscription for wallet ${subscription.wallet_address} has expired (after 30 minutes) with no transactions received. Setting to inactive.`,
         );
       }
 
