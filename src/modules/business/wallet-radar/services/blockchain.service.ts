@@ -5,6 +5,7 @@ import * as ethers from 'ethers';
 // ABI cho ERC20 token (chỉ phần cần thiết cho Transfer event)
 const ERC20_ABI = [
   'event Transfer(address indexed from, address indexed to, uint256 value)',
+  'function decimals() view returns (uint8)',
 ];
 
 @Injectable()
@@ -108,7 +109,8 @@ export class BlockchainService {
                   from: tx.from,
                   to: tx.to,
                   tokenAddress: null, // Native token
-                  amount: tx.value,
+                  amount: tx.value.toString(),
+                  formattedAmount: ethers.utils.formatEther(tx.value), // Format native token với 18 decimals
                   timestamp: block.timestamp,
                 });
               }
@@ -141,6 +143,17 @@ export class BlockchainService {
       // Tạo contract instance
       const contract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
 
+      // Lấy số decimals của token
+      let decimals;
+      try {
+        decimals = Number(await contract.decimals());
+      } catch (error) {
+        this.logger.warn(
+          `Could not get decimals for token ${tokenAddress}: ${error.message}`,
+        );
+        decimals = 18; // Default to 18 if unable to get decimals
+      }
+
       // Filter cho Transfer events từ địa chỉ ví
       // const sentFilter = contract.filters.Transfer(walletAddress, null);
 
@@ -156,13 +169,15 @@ export class BlockchainService {
       // Process sent transactions
       for (const log of sentLogs) {
         const block = await provider.getBlock(log.blockNumber);
+        const amount = log.args[2];
         transactions.push({
           hash: log.transactionHash,
           blockNumber: log.blockNumber,
           from: log.args[0],
           to: log.args[1],
           tokenAddress,
-          amount: log.args[2].toString(),
+          amount: amount.toString(),
+          formattedAmount: ethers.utils.formatUnits(amount, decimals),
           timestamp: block.timestamp,
         });
       }
@@ -170,13 +185,15 @@ export class BlockchainService {
       // Process received transactions
       for (const log of receivedLogs) {
         const block = await provider.getBlock(log.blockNumber);
+        const amount = log.args[2];
         transactions.push({
           hash: log.transactionHash,
           blockNumber: log.blockNumber,
           from: log.args[0],
           to: log.args[1],
           tokenAddress,
-          amount: log.args[2].toString(),
+          amount: amount.toString(),
+          formattedAmount: ethers.utils.formatUnits(amount, decimals),
           timestamp: block.timestamp,
         });
       }
