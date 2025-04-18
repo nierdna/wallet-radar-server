@@ -32,9 +32,10 @@ declare -A env_vars=(
     ["JWT_ACCESS_TOKEN_LIFETIME"]='604800'
     ["JWT_REFRESH_TOKEN_LIFETIME"]='2592000'
 
-    ["RPC_URL"]='https://sepolia.base.org'
-    ["PRIVATE_KEY"]=''
-    ["CONTRACT_ADDRESS"]=''
+    ["BASE_RPC_URL"]='https://radial-cold-vineyard.base-mainnet.quiknode.pro/29590a4143d60614a7cd0a9f3b5e39179430373e'
+    ["BASE_SEPOLIA_RPC_URL"]='https://blue-smart-energy.base-sepolia.quiknode.pro/f1b6c1400045b2f7ee93224247607cbd81e54c10'
+    ["ETH_RPC_URL"]='https://eth-mainnet.alchemyapi.io/v2/YOUR_API_KEY'
+    ["BSC_RPC_URL"]='https://bsc-dataseed.binance.org'
 )
 
 # Initialize empty command
