@@ -8,6 +8,7 @@ import { WalletSubscription } from '../../business/wallet-radar/entities/wallet_
 import { TransactionRecord } from '../../business/wallet-radar/entities/transaction_record.entity';
 import { BlockchainService } from '../../business/wallet-radar/services/blockchain.service';
 import { NotificationService } from '../../business/wallet-radar/services/notification.service';
+import { RabbitMQModule } from '../../common/rabbitmq';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { NotificationService } from '../../business/wallet-radar/services/notifi
     }),
     TypeOrmModule.forFeature([WalletSubscription, TransactionRecord]),
     HttpModule,
+    RabbitMQModule,
   ],
   providers: [
     WalletRadarProducer,
@@ -23,6 +25,7 @@ import { NotificationService } from '../../business/wallet-radar/services/notifi
     BlockchainService,
     NotificationService,
   ],
+
   exports: [WalletRadarProducer],
 })
 export class WalletRadarQueueModule {}

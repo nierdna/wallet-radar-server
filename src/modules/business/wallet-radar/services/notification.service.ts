@@ -3,12 +3,18 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { WalletSubscription } from '../entities/wallet_subscription.entity';
 import { TransactionRecord } from '../entities/transaction_record.entity';
+import { ClientProxy } from '@nestjs/microservices';
+import { Inject } from '@nestjs/common';
 
 @Injectable()
 export class NotificationService {
   private readonly logger = new Logger(NotificationService.name);
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    @Inject('WALLET_RADAR_SERVICE')
+    private readonly rabbitMQClient: ClientProxy,
+  ) {}
 
   async sendAlert(
     subscription: WalletSubscription,
@@ -50,6 +56,18 @@ export class NotificationService {
       }
     }
 
+    // Gửi sự kiện qua RabbitMQ
+    try {
+      await this.sendRabbitMQEvent(alertData);
+      this.logger.log(
+        `RabbitMQ event sent for transaction ${transaction.tx_hash}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send RabbitMQ event for transaction ${transaction.tx_hash}: ${error.message}`,
+      );
+    }
+
     return true;
   }
 
@@ -82,5 +100,17 @@ export class NotificationService {
       `Email would be sent to ${email} with data: ${JSON.stringify(data)}`,
     );
     return true;
+  }
+
+  async sendRabbitMQEvent(data: any) {
+    try {
+      // Emit event với pattern 'wallet-transaction' và payload là data
+      return await firstValueFrom(
+        this.rabbitMQClient.emit('wallet-transaction', data),
+      );
+    } catch (error) {
+      this.logger.error(`RabbitMQ event error: ${error.message}`);
+      throw error;
+    }
   }
 }
