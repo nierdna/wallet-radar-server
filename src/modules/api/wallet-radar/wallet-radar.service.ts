@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { WalletSubscription } from '../../business/wallet-radar/entities/wallet_subscription.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { GetSubscriptionsDto } from './dto/get-subscriptions.dto';
+import { BlockchainService } from '../../business/wallet-radar/services/blockchain.service';
 
 @Injectable()
 export class WalletRadarService {
@@ -12,6 +13,7 @@ export class WalletRadarService {
   constructor(
     @InjectRepository(WalletSubscription)
     private readonly walletSubscriptionRepository: Repository<WalletSubscription>,
+    private readonly blockchainService: BlockchainService,
   ) {}
 
   async createSubscription(dto: CreateSubscriptionDto) {
@@ -31,6 +33,26 @@ export class WalletRadarService {
         return existingSubscription;
       }
 
+      // Nếu last_processed_block không được cung cấp, lấy latest block của chain
+      let lastProcessedBlock = dto.last_processed_block;
+
+      if (lastProcessedBlock === undefined) {
+        try {
+          const provider =
+            this.blockchainService['providers'][dto.blockchain_network];
+          if (!provider) {
+            throw new Error(`Network ${dto.blockchain_network} not supported`);
+          }
+          lastProcessedBlock = await provider.getBlockNumber();
+          this.logger.log(
+            `Using latest block ${lastProcessedBlock} for network ${dto.blockchain_network}`,
+          );
+        } catch (error) {
+          this.logger.error(`Failed to get latest block: ${error.message}`);
+          lastProcessedBlock = 0; // Fallback to 0 if error occurs
+        }
+      }
+
       // Tạo subscription mới
       const newSubscription = this.walletSubscriptionRepository.create({
         wallet_address: dto.wallet_address,
@@ -38,7 +60,7 @@ export class WalletRadarService {
         blockchain_network: dto.blockchain_network,
         webhook_url: dto.webhook_url,
         email: dto.email,
-        last_processed_block: 0, // Bắt đầu từ block hiện tại
+        last_processed_block: lastProcessedBlock,
         active: true,
       });
 

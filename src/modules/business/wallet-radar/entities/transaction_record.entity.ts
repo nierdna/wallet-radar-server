@@ -44,6 +44,6 @@ export class TransactionRecord {
   @Column({ default: false })
   notified: boolean;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   created_at: Date;
 }

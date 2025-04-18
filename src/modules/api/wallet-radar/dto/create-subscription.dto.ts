@@ -2,10 +2,12 @@ import {
   IsEmail,
   IsEthereumAddress,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateSubscriptionDto {
   @ApiProperty({ description: 'Ethereum address of the wallet to monitor' })
@@ -39,4 +41,12 @@ export class CreateSubscriptionDto {
   @IsEmail()
   @IsOptional()
   email?: string;
+
+  @ApiPropertyOptional({
+    description: 'Block number to start monitoring from',
+  })
+  @IsOptional()
+  @IsNumber()
+  @Transform(({ value }) => (value ? parseInt(value, 10) : undefined))
+  last_processed_block?: number;
 }
