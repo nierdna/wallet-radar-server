@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WalletSubscription } from '../../business/wallet-radar/entities/wallet_subscription.entity';
@@ -15,7 +15,7 @@ export class BlockchainListenerService {
     private readonly walletRadarQueue: WalletRadarProducer,
   ) {}
 
-  @Cron('*/1 * * * *') // Chạy mỗi phút
+  @Cron(CronExpression.EVERY_30_SECONDS) // Chạy mỗi 30 giây
   async checkNewTransactions() {
     this.logger.log('Starting scheduled job to check for new transactions');
 
