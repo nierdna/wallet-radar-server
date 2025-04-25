@@ -13,6 +13,7 @@ import { WalletRadarService } from './wallet-radar.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { GetSubscriptionsDto } from './dto/get-subscriptions.dto';
 import { NotificationService } from '../../business/wallet-radar/services/notification.service';
+import { TestRabbitMQEventDto } from './dto/test-rabbitmq-event.dto';
 
 @ApiTags('wallet-radar')
 @Controller('wallet-radar')
@@ -51,35 +52,22 @@ export class WalletRadarController {
     };
   }
 
-  @Get('test-rabbitmq')
-  @ApiOperation({ summary: 'Test RabbitMQ event with mock data' })
-  @ApiResponse({ status: 200, description: 'Mock event sent to RabbitMQ' })
-  async testRabbitMQ() {
-    const mockData = {
-      wallet_address: '0xb16C8828E41651cCD3131B10AF7E0bCF1c48E397',
-      token_address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-      blockchain_network: 'base',
-      transaction_hash:
-        '0x2afc0f21e172a7077c49fb250971834190a2dd05ae70f17d563def35360da28f',
-      amount: '0',
-      from: '0x32a001d721Fa3826E5A92AF6D029beb44D2ede16',
-      to: '0xb16C8828E41651cCD3131B10AF7E0bCF1c48E397',
-      timestamp: new Date().toISOString(),
-      block_number: 29045127,
-    };
-
+  @Post('test-rabbitmq')
+  @ApiOperation({ summary: 'Test RabbitMQ event with client data' })
+  @ApiResponse({ status: 200, description: 'Event sent to RabbitMQ' })
+  async testRabbitMQ(@Body() eventData: TestRabbitMQEventDto) {
     try {
-      await this.notificationService.sendRabbitMQEvent(mockData);
+      await this.notificationService.sendRabbitMQEvent(eventData);
       return {
         success: true,
-        message: 'Test event sent to RabbitMQ successfully',
-        data: mockData,
+        message: 'Event sent to RabbitMQ successfully',
+        data: eventData,
       };
     } catch (error) {
       return {
         success: false,
-        message: `Failed to send test event: ${error.message}`,
-        data: mockData,
+        message: `Failed to send event: ${error.message}`,
+        data: eventData,
       };
     }
   }
