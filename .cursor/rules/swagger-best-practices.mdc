@@ -1,0 +1,137 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Quy tắc và Tiêu chuẩn Swagger
+
+## Tiêu chuẩn chung
+
+1. **Đầy đủ và Chi tiết**
+   - Mọi API phải có đầy đủ tài liệu Swagger
+   - Mỗi endpoint phải có mô tả chi tiết và rõ ràng
+   - Mỗi tham số đầu vào và đầu ra phải được mô tả
+
+2. **Nhất quán về Ngôn ngữ**
+   - Mọi mô tả phải bằng tiếng Anh theo quy tắc MDC
+   - Giữ nhất quán trong từ vựng và phong cách viết
+
+3. **Ví dụ và Giá trị mẫu**
+   - Cung cấp ví dụ cho tất cả thuộc tính 
+   - Đảm bảo ví dụ có ý nghĩa và thực tế
+
+## Mẫu tài liệu Controller
+
+```typescript
+@ApiTags('Resource Name') // Sử dụng PascalCase cho tags
+@Controller('resource-path') // Tuân thủ kebab-case theo quy tắc API
+export class ResourceController {
+  
+  @Get()
+  @ApiOperation({
+    summary: 'Get all resources',
+    description: 'Retrieves a list of all available resources with pagination'
+  })
+  @ApiQuery({
+    name: 'page',
+    description: 'Page number (starts from 1)',
+    required: false,
+    type: Number,
+    example: 1
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Number of items per page',
+    required: false,
+    type: Number,
+    example: 10
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Resources retrieved successfully',
+    type: ResourceListResponseDto
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid query parameters'
+  })
+  async getAllResources() {
+    // implementation
+  }
+}
+```
+
+## Quy tắc đặt tên
+
+1. **DTO Classes**
+   - Đặt tên rõ ràng về mục đích: `CreateUserDto`, `UpdateUserResponseDto`
+   - Sử dụng hậu tố `Dto` cho tất cả các classes
+
+2. **API Tags**
+   - Sử dụng danh từ số ít: 'User', 'Token', 'Auth'
+   - Sử dụng PascalCase: 'HealthCheck', không phải 'healthCheck' hoặc 'health-check'
+
+## Mẫu tài liệu DTO
+
+```typescript
+export class CreateResourceDto {
+  @ApiProperty({
+    description: 'The name of the resource',
+    example: 'Example Resource',
+    minLength: 3,
+    maxLength: 50
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  @MaxLength(50)
+  name: string;
+
+  @ApiPropertyOptional({
+    description: 'The description of the resource',
+    example: 'This is an example resource description',
+    default: ''
+  })
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty({
+    description: 'The type of resource',
+    enum: ResourceType,
+    example: ResourceType.STANDARD,
+    enumName: 'ResourceType'
+  })
+  @IsEnum(ResourceType)
+  type: ResourceType;
+}
+```
+
+## Danh sách kiểm tra chất lượng
+
+Trước khi commit code, hãy đảm bảo:
+
+1. ✅ Tất cả endpoints đều có `@ApiTags` và `@ApiOperation`
+2. ✅ Tất cả methods trong controllers đều có `@ApiResponse` với các status codes thích hợp
+3. ✅ Tất cả parameters, body và query đều được mô tả đầy đủ
+4. ✅ Tất cả DTOs đều có `@ApiProperty` cho mỗi thuộc tính
+5. ✅ Các ví dụ đều có ý nghĩa và đại diện cho dữ liệu thực tế
+6. ✅ Mô tả rõ ràng và dễ hiểu
+
+## Lưu ý về bảo mật
+
+1. Không bao giờ bao gồm thông tin nhạy cảm (mật khẩu, tokens, keys) trong ví dụ
+2. Sử dụng `@ApiBearerAuth()` cho tất cả endpoint yêu cầu xác thực
+3. Sử dụng `@ApiSecurity()` nếu cần xác thực tùy chỉnh
+
+## Các decorator Swagger thường dùng
+
+| Decorator | Mục đích | Vị trí sử dụng |
+|-----------|----------|----------------|
+| @ApiTags | Nhóm API theo chức năng | Controller |
+| @ApiOperation | Mô tả hoạt động của endpoint | Method |
+| @ApiResponse | Mô tả response có thể trả về | Method |
+| @ApiProperty | Mô tả thuộc tính trong DTO | Property |
+| @ApiQuery | Mô tả query parameter | Method |
+| @ApiParam | Mô tả path parameter | Method |
+| @ApiBearerAuth | Chỉ định endpoint yêu cầu Bearer token | Method/Controller | 

@@ -1,0 +1,119 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Hướng dẫn Swagger cho API
+
+## Quy tắc chung
+
+- Tất cả API phải có đầy đủ tài liệu Swagger
+- Mỗi endpoint phải có mô tả rõ ràng về chức năng và các response có thể trả về
+- DTOs phải có đầy đủ các decorator `@ApiProperty` cho tất cả các thuộc tính
+
+## Cấu trúc tài liệu Swagger cho Controller
+
+```typescript
+@ApiTags('Tên nhóm API')  // Phân nhóm API trong Swagger UI
+@Controller('endpoint-path')
+export class ExampleController {
+
+  @Get('resource')
+  @ApiOperation({ summary: 'Mô tả ngắn gọn về chức năng của API' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Mô tả kết quả thành công',
+    type: ResponseDTO  // DTO cho response (nếu có)
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Mô tả lỗi Bad Request'
+  })
+  // Các status code khác nếu có
+  async getResource() {
+    // implementation
+  }
+
+  // Nếu cần xác thực JWT
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()  // Hiển thị biểu tượng khóa và cho phép nhập token trong Swagger UI
+  @Post('resource')
+  // ApiOperation và ApiResponse tương tự như trên
+}
+```
+
+## Tài liệu cho DTOs
+
+Mỗi DTO phải có đầy đủ `@ApiProperty` cho tất cả các thuộc tính:
+
+```typescript
+export class ExampleDTO {
+  @ApiProperty({
+    description: "Mô tả chi tiết về thuộc tính",
+    example: "Giá trị mẫu",
+    required: true, // mặc định là true
+  })
+  @IsString() // Class validator decorators
+  property: string;
+
+  @ApiPropertyOptional({
+    // Nếu thuộc tính không bắt buộc
+    description: "Mô tả chi tiết về thuộc tính",
+    example: 123,
+    type: Number,
+  })
+  optionalProperty?: number;
+}
+```
+
+## Các decorators Swagger quan trọng
+
+1. **@ApiTags(tag)**: Phân nhóm API trong UI
+2. **@ApiOperation(options)**: Mô tả chi tiết về hoạt động của API
+3. **@ApiResponse(options)**: Mô tả response có thể trả về
+4. **@ApiBearerAuth()**: Chỉ định API yêu cầu xác thực Bearer token
+5. **@ApiParam(options)**: Mô tả parameter trong URL
+6. **@ApiQuery(options)**: Mô tả query parameter
+7. **@ApiProperty(options)**: Mô tả thuộc tính trong DTO
+8. **@ApiPropertyOptional(options)**: Mô tả thuộc tính không bắt buộc
+
+## Responses tùy chỉnh
+
+Sử dụng `@ApiBaseResponse` đã định nghĩa sẵn trong dự án để tạo response chuẩn:
+
+```typescript
+@Get('resource')
+@ApiBaseResponse(ResourceDTO, {
+  description: 'Lấy thông tin resource thành công',
+  isArray: false  // true nếu trả về mảng
+})
+async getResource() {
+  // implementation
+}
+```
+
+## Tài liệu cho các request yêu cầu xác thực
+
+```typescript
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()  // Thêm decorator này
+@Get('protected-resource')
+@ApiOperation({ summary: 'API yêu cầu xác thực' })
+// Các ApiResponse...
+async getProtectedResource() {
+  // implementation
+}
+```
+
+## Swagger UI
+
+Swagger UI được cấu hình trong `main.ts` và có thể truy cập tại `/docs` khi chạy ứng dụng ở môi trường không phải production.
+
+## Kiểm tra
+
+Sau khi thêm tài liệu Swagger, hãy kiểm tra:
+
+1. Tất cả các endpoints đều hiển thị trong Swagger UI
+2. Mô tả và ví dụ rõ ràng, dễ hiểu
+3. Có thể gửi request thử nghiệm trực tiếp từ Swagger UI
+4. Các status code và response đúng với thực tế

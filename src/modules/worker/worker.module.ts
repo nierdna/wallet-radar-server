@@ -38,7 +38,6 @@ if (isWorker) {
             db: db,
             password: password,
             family: family,
-            // tls,
           },
         };
       },
