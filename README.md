@@ -1,34 +1,34 @@
 # Wallet Radar Server
 
-Hệ thống theo dõi giao dịch blockchain và gửi thông báo khi phát hiện giao dịch mới từ một địa chỉ ví được chỉ định.
+Blockchain transaction monitoring system that sends notifications when new transactions are detected from a specified wallet address.
 
-## Tính năng chính
+## Key Features
 
-- **Theo dõi ví blockchain**: Lắng nghe các giao dịch từ địa chỉ ví được chỉ định trên nhiều mạng blockchain.
-- **Lọc token**: Có thể theo dõi giao dịch của một token cụ thể hoặc tất cả các tokens.
-- **Thông báo đa kênh**: Gửi alert qua webhook, email, và có thể mở rộng thêm các kênh thông báo khác.
-- **Xử lý bất đồng bộ**: Sử dụng queue system để xử lý hiệu quả việc lắng nghe và thông báo.
-- **RESTful API**: Quản lý subscriptions thông qua API endpoints.
+- **Blockchain Wallet Monitoring**: Listen for transactions from specified wallet addresses across multiple blockchain networks.
+- **Token Filtering**: Ability to track transactions for a specific token or all tokens.
+- **Multi-channel Notifications**: Send alerts via webhook, email, and other expandable notification channels.
+- **Asynchronous Processing**: Use queue system for efficient listening and notification processing.
+- **RESTful API**: Manage subscriptions through API endpoints.
 
-## Kiến trúc hệ thống
+## System Architecture
 
-Hệ thống bao gồm các thành phần chính:
+The system includes these main components:
 
-1. **API Module**: Xử lý các yêu cầu HTTP để tạo/quản lý subscriptions
-2. **Worker Module**: Chạy cron job để kiểm tra giao dịch mới
-3. **Queue System**: Xử lý bất đồng bộ việc kiểm tra và thông báo giao dịch
-4. **Blockchain Service**: Tương tác với các mạng blockchain để lấy thông tin giao dịch
-5. **Notification Service**: Gửi thông báo qua các kênh khác nhau
+1. **API Module**: Handles HTTP requests to create/manage subscriptions
+2. **Worker Module**: Runs cron jobs to check for new transactions
+3. **Queue System**: Processes transaction checking and notifications asynchronously
+4. **Blockchain Service**: Interacts with blockchain networks to retrieve transaction information
+5. **Notification Service**: Sends notifications through various channels
 
-## Cài đặt và chạy
+## Installation and Running
 
-### Yêu cầu
+### Requirements
 
 - Node.js v16+
 - PostgreSQL
 - Redis
 
-### Cài đặt
+### Installation
 
 1. Clone repository:
 ```bash
@@ -36,60 +36,60 @@ git clone https://github.com/your-username/wallet-radar-server.git
 cd wallet-radar-server
 ```
 
-2. Cài đặt dependencies:
+2. Install dependencies:
 ```bash
 pnpm install
 ```
 
-3. Cấu hình môi trường:
+3. Configure environment:
 ```bash
 cp .env.sample .env
-# Cập nhật các thông tin trong file .env
+# Update information in .env file
 ```
 
-4. Tạo database và chạy migrations:
+4. Create database and run migrations:
 ```bash
-createdb wallet_radar  # Hoặc tạo trong PostgreSQL UI
+createdb wallet_radar  # Or create in PostgreSQL UI
 pnpm migration:run
 ```
 
-### Chạy ứng dụng
+### Running the Application
 
 #### Development:
 ```bash
-# Chạy API server
+# Run API server
 IS_API=1 pnpm start:dev
 
-# Chạy worker
+# Run worker
 IS_WORKER=1 pnpm start:dev
 
-# Chạy cả API và worker
+# Run both API and worker
 IS_API=1 IS_WORKER=1 pnpm start:dev
 ```
 
 #### Production:
 ```bash
-# Build ứng dụng
+# Build the application
 pnpm build
 
-# Chạy server
+# Run server
 IS_API=1 IS_WORKER=1 NODE_ENV=production pnpm start:prod
 ```
 
 ## API Documentation
 
-Xem chi tiết API trong tài liệu Swagger tại: `http://localhost:3000/api`
+View detailed API in the Swagger documentation at: `http://localhost:3000/api`
 
-### Endpoints chính:
+### Main Endpoints:
 
-- `POST /wallet-radar/subscribe` - Tạo subscription mới
-- `GET /wallet-radar/subscriptions` - Lấy danh sách subscriptions
-- `GET /wallet-radar/subscriptions/:id` - Lấy subscription theo ID
-- `DELETE /wallet-radar/subscriptions/:id` - Xóa subscription
+- `POST /wallet-radar/subscribe` - Create new subscription
+- `GET /wallet-radar/subscriptions` - Get list of subscriptions
+- `GET /wallet-radar/subscriptions/:id` - Get subscription by ID
+- `DELETE /wallet-radar/subscriptions/:id` - Delete subscription
 
-## Tài liệu chi tiết
+## Detailed Documentation
 
-Xem thêm tài liệu chi tiết tại: [src/modules/business/wallet-radar/README.md](src/modules/business/wallet-radar/README.md)
+See more detailed documentation at: [src/modules/business/wallet-radar/README.md](src/modules/business/wallet-radar/README.md)
 
 ## RabbitMQ Integration
 
